@@ -5,12 +5,6 @@ namespace RecipeFinder\Ingredient;
 interface IngredientRepositoryInterface {
 
     /**
-     * Set the datasource to be used in the child IngredientRepository
-     * @param Any $source Implement type in extended class.
-     */
-    public function setDatasource($source);
-
-    /**
      * Return all ingredients after from the datasource, no filters used.
      * @return Collection collection of ingredients
      */

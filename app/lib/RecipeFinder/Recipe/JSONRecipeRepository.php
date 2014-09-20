@@ -3,23 +3,9 @@
 namespace RecipeFinder\Recipe;
 
 use Recipe;
+use Core\Classes\AbstractFileRepository;
 
-class JSONRecipeRepository implements RecipeRepositoryInterface {
-
-    /**
-     * Path to the JSON file to be parsed to retrieve recipes.
-     * @var String
-     */
-    protected $filepath;
-
-    /**
-     * Set recipe (JSON) file to be parsed.
-     * @return String path to the file to be parsed.
-     */
-    private function setDatasource($filepath) {
-        $this->filepath = $filepath;
-        return $this;
-    }
+class JSONRecipeRepository extends AbstractFileRepository implements RecipeRepositoryInterface {
 
     public function getAll() {
 

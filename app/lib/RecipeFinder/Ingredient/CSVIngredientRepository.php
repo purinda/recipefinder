@@ -3,23 +3,9 @@
 namespace RecipeFinder\Ingredient;
 
 use Ingredient;
+use Core\Classes\AbstractFileRepository;
 
-class CSVIngredientRepository implements IngredientRepositoryInterface {
-
-    /**
-     * Path to the CSV file to be parsed to retrieve ingredients.
-     * @var String
-     */
-    protected $filepath;
-
-    /**
-     * Set ingredients (CSV) file to be parsed.
-     * @return String path to the file to be parsed.
-     */
-    private function setDatasource($filepath) {
-        $this->filepath = $filepath;
-        return $this;
-    }
+class CSVIngredientRepository extends AbstractFileRepository implements IngredientRepositoryInterface {
 
     public function getAll() {
 
