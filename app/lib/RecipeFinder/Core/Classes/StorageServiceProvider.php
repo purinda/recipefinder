@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use RecipeFinder\Ingredient;
 use RecipeFinder\Recipe;
 
-class BackendServiceProvider extends ServiceProvider {
+class StorageServiceProvider extends ServiceProvider {
 
     /**
      * Bind repository interfaces to actual repository objects.

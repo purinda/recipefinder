@@ -121,7 +121,7 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
         'Illuminate\Workbench\WorkbenchServiceProvider',
-		'Core\Classes\StorageServiceProvider',
+		'RecipeFinder\Core\Classes\StorageServiceProvider',
 
 	),
 

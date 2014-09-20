@@ -49,5 +49,12 @@ class Recipe {
         return $this;
     }
 
+    /**
+     * Get Ingredients
+     * @return Collection a collection of Ingredients
+     */
+    public function getIngredients() {
+        return $this->ingredients;
+    }
 
 }

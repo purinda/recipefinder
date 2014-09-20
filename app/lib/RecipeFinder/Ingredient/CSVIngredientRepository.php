@@ -3,7 +3,7 @@
 namespace RecipeFinder\Ingredient;
 
 use Ingredient;
-use Core\Classes\AbstractFileRepository;
+use RecipeFinder\Core\Classes\AbstractFileRepository;
 use League\Csv\Reader;
 
 class CSVIngredientRepository extends AbstractFileRepository implements IngredientRepositoryInterface {
@@ -18,39 +18,13 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
 
     /**
      * Path of the CSV file to be parsed
-     * @param [type] $filepath [description]
+     * @param String $filepath file path
      */
-    public function __construct($filepath) {
-        $this->setDatasource($filepath);
+    public function setDatasource($filepath) {
+        parent::setDatasource($filepath);
         $this->initParser();
-    }
 
-    /**
-     * Return all Ingredients found in the CSV
-     * @return array array of Ingredient objects
-     */
-    public function getAll() {
-        $ingredient_rows = $reader->fetchAssoc();
-        return self::getIngredientObjs($ingredient_rows);
-    }
-
-    /**
-     * Find ingredient by name.
-     * @param  String $name name of the ingredient
-     * @return Ingredient   an instance of the ingredient object if found or NULL if doesn't
-     */
-    public function findByName($name) {
-
-        // Define the filter to be used for finding the match
-        $filter_func = function($row) use ($name) {
-            return $row[0] == $name;
-        };
-
-        $ingredient_rows = $reader
-            ->addFilter($filter_func);
-            ->fetchAssoc();
-
-        return self::getIngredientObjs($ingredient_rows);
+        return $this;
     }
 
     /**
@@ -66,6 +40,61 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
         $this->csv_reader = Reader::createFromPath($this->getDatasource());
         return TRUE;
     }
+
+    /**
+     * Return all Ingredients found in the CSV
+     * @return Collection collection of Ingredient objects
+     */
+    public function getAll() {
+        $ingredient_rows = $reader->fetchAssoc();
+        return self::getIngredientCollection($ingredient_rows);
+    }
+
+    /**
+     * Find ingredient by name.
+     * @param  String $name name of the ingredient
+     * @return Ingredient   an instance of the ingredient object if found or NULL if doesn't
+     */
+    public function findByName($name) {
+
+        // Define the filter to be used for finding the match
+        $filter_func = function($row) use ($name) {
+            return $row[0] == $name;
+        };
+
+        // Filter CSV data using the above filter
+        $ingredient_rows = $reader
+            ->addFilter($filter_func)
+            ->fetchAssoc();
+
+        return self::getIngredientCollection($ingredient_rows)->first();
+    }
+
+    /**
+     * Lookup all ingredients by their use-by date.
+     * If on or before the use-by-date this function will return them.
+     *
+     * @param  DateTime   $use_by date to be used by, leave empty to use current date
+     * @return Collection a collection of ingredients which can be used for cooking as per $when date.
+     */
+    public function lookupUsableIngredients(DateTime $use_by = NULL) {
+        if ($use_by === NULL) {
+            $use_by = new DateTime();
+        }
+
+        // Define the filter to be used for finding the match
+        $filter_func = function($row) use ($use_by) {
+            return self::parseCSVDateFormat($row[3]) <= $use_by;
+        };
+
+        // Filter CSV data using the above filter
+        $ingredient_rows = $reader
+            ->addFilter($filter_func)
+            ->fetchAssoc();
+
+        return self::getIngredientCollection($ingredient_rows);
+    }
+
 
     /**
      * Convert dates used in CSV to DateTime objects
@@ -85,10 +114,10 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
     /**
      * Return an array of ingredients based on CSV dataset passed in
      * @param  Array $csv_rows array of CSV row data
-     * @return Array           array of ingredient objects
+     * @return Collection      array of ingredient objects
      */
-    private static function getIngredientObjs($csv_rows) {
-        $ingredients = array();
+    private static function getIngredientCollection($csv_rows) {
+        $ingredients = new Collection();
 
         foreach ($ingredient_rows as $row) {
             $ingredient = new Ingredient();
@@ -98,7 +127,7 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
                 ->setUnit($row[2])
                 ->setUsedByDate(self::parseCSVDateFormat($row[3]));
 
-            $ingredients[] = $ingredient;
+            $ingredients->push($ingredient);
         }
 
         return $ingredients;
