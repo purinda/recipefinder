@@ -4,7 +4,7 @@ namespace RecipeFinder\Core\Classes;
 
 use Illuminate\Support\ServiceProvider;
 use RecipeFinder\Ingredient;
-use RecipeFinder\Recipes;
+use RecipeFinder\Recipe;
 
 class BackendServiceProvider extends ServiceProvider {
 
