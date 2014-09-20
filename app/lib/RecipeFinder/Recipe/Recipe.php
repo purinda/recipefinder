@@ -2,8 +2,7 @@
 
 namespace RecipeFinder\Recipe;
 
-use RecipeFinder\Ingredient\AbstractIngredient;
-use RecipeFinder\Ingredient\Ingredient;
+use RecipeFinder\Recipe\Ingredient;
 use Illuminate\Support\Collection;
 
 class Recipe {
@@ -43,10 +42,10 @@ class Recipe {
 
     /**
      * Add an ingredient to the recipe.
-     * @param AbstractIngredient $ingredient ingredient obj
+     * @param Ingredient $ingredient ingredient obj
      */
-    public function addIngredient(AbstractIngredient $ingredient) {
-        $this->ingredients->push($ingredient);
+    public function addIngredient(Ingredient $ingredient) {
+        $this->ingredients->put($ingredient->getName(), $ingredient);
         return $this;
     }
 

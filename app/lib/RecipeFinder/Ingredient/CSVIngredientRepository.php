@@ -138,7 +138,7 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
                 ->setUnit($row[2])
                 ->setUsedByDate(self::parseCSVDateFormat($row[3]));
 
-            $ingredients->push($ingredient);
+            $ingredients->put($ingredient->getName(), $ingredient);
         }
 
         return $ingredients;

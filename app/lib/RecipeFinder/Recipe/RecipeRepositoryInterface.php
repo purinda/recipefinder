@@ -10,11 +10,4 @@ interface RecipeRepositoryInterface {
      */
     public function getAll();
 
-    /**
-     * Find an recipe by name
-     * @param  String $name name of the recipe
-     * @return Recipe       an instance of recipe
-     */
-    public function findByName($name);
-
 }

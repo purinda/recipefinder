@@ -3,7 +3,7 @@
 namespace RecipeFinder\Recipe;
 
 use RecipeFinder\Recipe\Recipe;
-use RecipeFinder\Ingredient\Ingredient;
+use RecipeFinder\Recipe\Ingredient;
 use RecipeFinder\Core\Classes\AbstractFileRepository;
 use Illuminate\Filesystem\FileNotFoundException;
 use Illuminate\Support\Collection;
@@ -64,16 +64,6 @@ class JSONRecipeRepository extends AbstractFileRepository implements RecipeRepos
         }
 
         return $recipes;
-    }
-
-    public function lookupByIngredients() {
-
-        // Define CSV get all
-    }
-
-    public function findByName($id) {
-
-        // Define how factory would find and return an recipe
     }
 
 }
