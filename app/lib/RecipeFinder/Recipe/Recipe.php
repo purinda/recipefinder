@@ -2,8 +2,9 @@
 
 namespace RecipeFinder\Recipe;
 
+use RecipeFinder\Ingredient\AbstractIngredient;
+use RecipeFinder\Ingredient\Ingredient;
 use Illuminate\Support\Collection;
-use Ingredient;
 
 class Recipe {
 

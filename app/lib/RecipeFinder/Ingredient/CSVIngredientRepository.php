@@ -2,9 +2,10 @@
 
 namespace RecipeFinder\Ingredient;
 
-use Ingredient;
+use RecipeFinder\Ingredient\Ingredient;
 use RecipeFinder\Core\Classes\AbstractFileRepository;
 use League\Csv\Reader;
+use Illuminate\Support\Collection;
 
 class CSVIngredientRepository extends AbstractFileRepository implements IngredientRepositoryInterface {
 
@@ -46,7 +47,7 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
      * @return Collection collection of Ingredient objects
      */
     public function getAll() {
-        $ingredient_rows = $reader->fetchAssoc();
+        $ingredient_rows = $this->csv_reader->fetchAssoc();
         return self::getIngredientCollection($ingredient_rows);
     }
 
@@ -63,34 +64,44 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
         };
 
         // Filter CSV data using the above filter
-        $ingredient_rows = $reader
+        $ingredient_rows = $this->csv_reader
             ->addFilter($filter_func)
-            ->fetchAssoc();
+            ->fetchAll();
 
         return self::getIngredientCollection($ingredient_rows)->first();
     }
 
     /**
      * Lookup all ingredients by their use-by date.
-     * If on or before the use-by-date this function will return them.
+     * If an ingredient expiry is on or before the use-by-date
+     * this function will return them. Filters safe items
+     * to be consumed.
      *
      * @param  DateTime   $use_by date to be used by, leave empty to use current date
-     * @return Collection a collection of ingredients which can be used for cooking as per $when date.
+     * @return Collection a collection of ingredients which can be used
+     *                    for cooking as per $when date.
      */
     public function lookupUsableIngredients(DateTime $use_by = NULL) {
+
+        // If not defines use current date
         if ($use_by === NULL) {
-            $use_by = new DateTime();
+            $use_by = new \DateTime();
         }
+
 
         // Define the filter to be used for finding the match
         $filter_func = function($row) use ($use_by) {
-            return self::parseCSVDateFormat($row[3]) <= $use_by;
+            if (empty($row) || !isset($row[3])) {
+                return;
+            }
+
+            return $use_by <= self::parseCSVDateFormat($row[3]);
         };
 
         // Filter CSV data using the above filter
-        $ingredient_rows = $reader
+        $ingredient_rows = $this->csv_reader
             ->addFilter($filter_func)
-            ->fetchAssoc();
+            ->fetchAll();
 
         return self::getIngredientCollection($ingredient_rows);
     }
@@ -103,7 +114,7 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
      * @return DateTime     an instance of datetime object if parseable, FALSE instead
      */
     static protected function parseCSVDateFormat($date) {
-        $date = DateTime::createFromFormat(
+        $date = \DateTime::createFromFormat(
             'j/n/Y',
             $date
         );
@@ -119,7 +130,7 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
     private static function getIngredientCollection($csv_rows) {
         $ingredients = new Collection();
 
-        foreach ($ingredient_rows as $row) {
+        foreach ($csv_rows as $row) {
             $ingredient = new Ingredient();
             $ingredient
                 ->setName($row[0])

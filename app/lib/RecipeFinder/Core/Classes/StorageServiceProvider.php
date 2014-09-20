@@ -20,8 +20,8 @@ class StorageServiceProvider extends ServiceProvider {
         );
 
         $this->app->bind(
-            'RecipeFinder\Recipes\RecipesRepositoryInterface',
-            'RecipeFinder\Recipes\JSONRecipesRepository'
+            'RecipeFinder\Recipe\RecipeRepositoryInterface',
+            'RecipeFinder\Recipe\JSONRecipeRepository'
         );
     }
 

@@ -16,7 +16,7 @@ final class Ingredient extends AbstractIngredient {
      * Set used-by-date
      * @param Datetime $date a date to be set.
      */
-    public function setUsedByDate(DateTime $date = null) {
+    public function setUsedByDate(\DateTime $date = null) {
         $this->used_by_date = $date;
         return $this;
     }
