@@ -6,7 +6,7 @@ use RecipeFinder\Recipe\RecipeRepositoryInterface;
 use RecipeFinder\Ingredient\IngredientRepositoryInterface;
 use RecipeFinder\Core\Specifications\IngredientInFridgeSpecification;
 use RecipeFinder\Core\Specifications\RecipeIngredientQtyAvailableSpecification;
-use RecipeFinder\Core\Specifications\OrderTakeoutSpecification;
+use RecipeFinder\Core\Exceptions\OrderTakeoutException;
 use Illuminate\Support\Collection;
 
 class RecipeFinder {
@@ -83,7 +83,7 @@ class RecipeFinder {
         $preparable_recipes = $this->preparableRecipes($date);
 
         if ($preparable_recipes->count() == 0) {
-            // Throw an order take out exception
+            throw new OrderTakeoutException();
         } else if ($preparable_recipes->count() == 1) {
 
             // Only one found

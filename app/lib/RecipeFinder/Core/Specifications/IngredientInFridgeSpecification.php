@@ -15,6 +15,7 @@ class IngredientInFridgeSpecification extends AbstractSpecification {
     private $ingredient_repository;
 
     public function __construct(IngredientRepositoryInterface $ingredient_repository) {
+        parent::__construct();
         $this->ingredient_repository = $ingredient_repository;
     }
 

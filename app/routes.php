@@ -12,4 +12,6 @@
 */
 
 Route::get('/', 'HomeController@showWelcome');
+Route::post('/upload', 'HomeController@upload');
+Route::get('/todaysRecipe', 'HomeController@todaysRecipe');
 
