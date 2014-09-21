@@ -8,6 +8,11 @@
 * Specification pattern implementation can be improved with chainable logic operators.
 * Test cases could be done better with automatic object resolution to support repository pattern implementation.
 
+# Installation
+```
+composer install
+```
+
 # How to run the application
 Go to the directory where project files are and then
 
