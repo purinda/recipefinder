@@ -10,7 +10,6 @@ class IngredientsTest extends TestCase {
     public function setUp() {
         parent::setup();
         $this->ingredients_csv = app_path() . '/tests/data/ingredients.csv';
-        // die(var_dump($this->ingredients_csv));
     }
 
     public function testIngredientsRepositoryInterface() {
