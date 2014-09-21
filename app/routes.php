@@ -12,6 +12,7 @@
 */
 
 Route::get('/', 'HomeController@showWelcome');
+Route::get('/test', 'HomeController@test');
 Route::post('/upload', 'HomeController@upload');
 Route::get('/todaysRecipe', 'HomeController@todaysRecipe');
 

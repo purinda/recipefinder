@@ -140,4 +140,18 @@ class RecipeFinder {
 
         return $this;
     }
+
+    /**
+     * A quick way to test the system, function sets the default
+     * test files to Repositories.
+     */
+    public function test() {
+        $ingredients_csv = public_path() . '/testdata/ingredients.csv';
+        $recipes_csv     = public_path() . '/testdata/recipes.json';
+
+        $this->ingredient_repository->setDatasource($ingredients_csv);
+        $this->recipe_repository->setDatasource($recipes_csv);
+
+        return $this->todaysRecipe();
+    }
 }

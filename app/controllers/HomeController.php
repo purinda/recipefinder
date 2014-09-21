@@ -37,6 +37,17 @@ class HomeController extends BaseController {
         return Redirect::to('/todaysRecipe')->with('recipe', $recipe_name);
     }
 
+    public function test() {
+        try {
+            $recipe_name = $this->recipe_finder->test()->getName();
+        } catch (OrderTakeoutException $e) {
+            $recipe_name = 'order takeout';
+        }
+
+        return Redirect::to('/todaysRecipe')->with('recipe', $recipe_name);
+
+    }
+
     public function todaysRecipe() {
         if (!Session::get('recipe')) {
             return Redirect::to('/');
