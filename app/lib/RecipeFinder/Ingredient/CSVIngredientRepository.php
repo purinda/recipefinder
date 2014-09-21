@@ -85,7 +85,6 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
 
         // If not defines use current date
         if ($use_by === NULL) {
-            var_dump($use_by);
             $use_by = new \DateTime();
         }
 
