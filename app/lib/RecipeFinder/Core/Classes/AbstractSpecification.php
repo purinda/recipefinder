@@ -4,12 +4,12 @@ namespace RecipeFinder\Core\Classes;
 
 use Illuminate\Support\MessageBag;
 
-abstract class AbstractSpec implements SpecificationInterface {
+abstract class AbstractSpecification implements SpecificationInterface {
 
     protected $messages;
 
     public function __construct() {
-        $this->messages = new MessageBag;
+        $this->messages = new MessageBag();
     }
 
     public abstract function isSatisfiedBy($contestant);

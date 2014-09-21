@@ -24,6 +24,6 @@ interface IngredientRepositoryInterface {
      * @param  DateTime   $use_by date to be used by, leave empty to use current date
      * @return Collection a collection of ingredients which can be used for cooking as per $when date.
      */
-    public function lookupUsableIngredients(DateTime $use_by = NULL);
+    public function lookupUsableIngredients(\DateTime $use_by = NULL);
 
 }

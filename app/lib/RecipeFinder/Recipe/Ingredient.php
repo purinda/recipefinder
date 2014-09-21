@@ -4,7 +4,10 @@ namespace RecipeFinder\Recipe;
 
 use RecipeFinder\Ingredient\AbstractIngredient;
 
-final class Ingredient extends AbstractIngredient {
+/**
+ * No implementation required (ignoring used-by-date for Recipe\Ingredient).
+ * Inherit abstract class properties.
+ */
+class Ingredient extends AbstractIngredient {
 
-    // No implementation required
 }

@@ -4,6 +4,9 @@ namespace RecipeFinder;
 
 use RecipeFinder\Recipe\RecipeRepositoryInterface;
 use RecipeFinder\Ingredient\IngredientRepositoryInterface;
+use RecipeFinder\Core\Specifications\IngredientInFridgeSpecification;
+use RecipeFinder\Core\Specifications\RecipeIngredientQtyAvailableSpecification;
+use RecipeFinder\Core\Specifications\OrderTakeoutSpecification;
 use Illuminate\Support\Collection;
 
 class RecipeFinder {
@@ -29,40 +32,37 @@ class RecipeFinder {
      * This returns one or more recipes that can be cooked with
      * the ingredients in the fridge for the day.
      *
-     * @return Collection returns a collection of recipes
+     * @param  DateTime $date override current date
+     * @return Collection returns a collection of recipes based on current date or overridden date.
      */
-    public function preparableRecipes() {
-        static $recipe_shortlist;
+    public function preparableRecipes(\DateTime $date = NULL) {
+        $safe_ingredients = $this->ingredient_repository->lookupUsableIngredients($date);
 
-        // Since this function is called multiple times, return the initialised obj
-        if ($recipe_shortlist !== NULL) {
-            return $recipe_shortlist;
-        }
+        // Init required specifications
+        $this->specIngredientInFridge = new IngredientInFridgeSpecification($this->ingredient_repository);
+        $this->specRecipeQtyAvilable  = new RecipeIngredientQtyAvailableSpecification($safe_ingredients);
 
         $recipe_shortlist = new Collection();
-        $safe_ingredients = $this->ingredient_repository->lookupUsableIngredients();
-
         foreach ($this->recipe_repository->getAll() as $recipe) {
 
-            $matched_ingredients = $recipe->getIngredients()->filter(
+            $matched_ingredients_in_fridge = $recipe->getIngredients()->filter(
                 function ($recipe_ingredient) use ($safe_ingredients) {
 
                     // Determine whether the recipe ingredient is in the fridge?
                     // If not cancel out here.
-                    if (!$safe_ingredients->has($recipe_ingredient->getName())) {
+                    if (!$this->specIngredientInFridge->isSatisfiedBy($recipe_ingredient)) {
                         return FALSE;
                     }
 
                     // Check if the required qty available in the fridge
-                    $qty_available = $safe_ingredients->get($recipe_ingredient->getName())->getQty();
-                    if ($recipe_ingredient->getQty() <= $qty_available) {
+                    if ($this->specRecipeQtyAvilable->isSatisfiedBy($recipe_ingredient)) {
                         return TRUE;
                     }
                 }
             );
 
             // If above specifications get satisfied, short list the recipe
-            if ($recipe->getIngredients()->count() == $matched_ingredients->count()) {
+            if ($recipe->getIngredients()->count() == $matched_ingredients_in_fridge->count()) {
                 $recipe_shortlist->put($recipe->getName(), $recipe);
             }
 
@@ -76,21 +76,22 @@ class RecipeFinder {
      * ingredients in the fridge. The recipe with ingredients which has the closest
      * use by date will be returned.
      *
+     * @param  DateTime $date override current date
      * @return Recipe a recipe
      */
-    public function todaysRecipe() {
+    public function todaysRecipe(\DateTime $date = NULL) {
+        $preparable_recipes = $this->preparableRecipes($date);
 
-        if ($this->preparableRecipes()->count() == 0) {
+        if ($preparable_recipes->count() == 0) {
             // Throw an order take out exception
-        } else if ($this->preparableRecipes()->count() == 1) {
+        } else if ($preparable_recipes->count() == 1) {
 
             // Only one found
-            return $this->preparableRecipes()->first();
+            return $preparable_recipes->first();
         }
 
-
         // Sort usable ingredients by their use-by-date (asc)
-        $safe_ingredients_sorted = $this->ingredient_repository->lookupUsableIngredients()->sort(
+        $safe_ingredients_sorted = $this->ingredient_repository->lookupUsableIngredients($date)->sort(
             function ($a, $b) {
                 if ($a->getUsedByDate() == $b->getUsedByDate()) {
                     return 0;
@@ -105,7 +106,7 @@ class RecipeFinder {
         foreach ($safe_ingredients_sorted as $closest_useby_ingredient) {
             $todays_recipe = NULL;
 
-            $this->preparableRecipes()->each(
+            $preparable_recipes->each(
                 function($potential_recipe) use ($closest_useby_ingredient, &$todays_recipe){
                     $found = $potential_recipe->getIngredients()->offsetExists(
                         $closest_useby_ingredient->getName()
@@ -125,20 +126,6 @@ class RecipeFinder {
         }
 
         return $todays_recipe;
-    }
-
-    /**
-     * A quick way to test the system, function sets the default
-     * test files to Repositories.
-     */
-    public function test() {
-        $ingredients_csv = public_path() . '/testdata/ingredients.csv';
-        $recipes_csv     = public_path() . '/testdata/recipes.json';
-
-        $this->ingredient_repository->setDatasource($ingredients_csv);
-        $this->recipe_repository->setDatasource($recipes_csv);
-
-        dd($this->todaysRecipe());
     }
 
     /**

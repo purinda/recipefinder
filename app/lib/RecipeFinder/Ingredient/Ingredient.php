@@ -2,7 +2,7 @@
 
 namespace RecipeFinder\Ingredient;
 
-final class Ingredient extends AbstractIngredient {
+class Ingredient extends AbstractIngredient {
 
     /**
      * Used-by-date of an ingredient.

@@ -14,7 +14,7 @@ abstract class AbstractFileRepository {
      * Set file to be parsed.
      * @return String path to the file to be parsed.
      */
-    protected function setDatasource($filepath) {
+    public function setDatasource($filepath) {
         $this->filepath = $filepath;
         return $this;
     }
@@ -23,7 +23,7 @@ abstract class AbstractFileRepository {
      * Get file to be parsed.
      * @return String path to the file to be parsed.
      */
-    protected function getDatasource() {
+    public function getDatasource() {
         return $this->filepath;
     }
 

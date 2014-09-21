@@ -47,7 +47,7 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
      * @return Collection collection of Ingredient objects
      */
     public function getAll() {
-        $ingredient_rows = $this->csv_reader->fetchAssoc();
+        $ingredient_rows = $this->csv_reader->fetchAll();
         return self::getIngredientCollection($ingredient_rows);
     }
 
@@ -81,18 +81,18 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
      * @return Collection a collection of ingredients which can be used
      *                    for cooking as per $when date.
      */
-    public function lookupUsableIngredients(DateTime $use_by = NULL) {
+    public function lookupUsableIngredients(\DateTime $use_by = NULL) {
 
         // If not defines use current date
         if ($use_by === NULL) {
+            var_dump($use_by);
             $use_by = new \DateTime();
         }
-
 
         // Define the filter to be used for finding the match
         $filter_func = function($row) use ($use_by) {
             if (empty($row) || !isset($row[3])) {
-                return;
+                return FALSE;
             }
 
             return $use_by <= self::parseCSVDateFormat($row[3]);
@@ -131,6 +131,12 @@ class CSVIngredientRepository extends AbstractFileRepository implements Ingredie
         $ingredients = new Collection();
 
         foreach ($csv_rows as $row) {
+
+            // Ignore whitespace/eof chars
+            if (empty(trim($row[0]))) {
+                continue;
+            }
+
             $ingredient = new Ingredient();
             $ingredient
                 ->setName($row[0])
